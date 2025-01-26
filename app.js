@@ -9,6 +9,7 @@ var paymentRouter = require('./routes/product');
 var customeRouter = require('./routes/customer');
 var collectionOrderRouter = require('./routes/collectionorder');
 var IncomeAndExpensesRouter = require('./routes/IncomeAndExpenses');
+var DashboardRouter = require('./routes/dashboard');
 const mongoose = require('mongoose')
 
 var app = express();
@@ -36,6 +37,7 @@ app.use('/Customer', customeRouter);
 app.use('/Product', paymentRouter);
 app.use('/CollectionOrder', collectionOrderRouter);
 app.use('/IncomeAndExpenses', IncomeAndExpensesRouter);
+app.use('/Dashboard', DashboardRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

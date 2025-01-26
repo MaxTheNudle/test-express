@@ -26,8 +26,11 @@ router.get('/:id', async (req, res) => {
         if (incomeAndExpenses.length === 0) {
             return res.status(404).json({ message: 'Income and Expenses not found' });
         }
-
-        res.status(200).json(incomeAndExpenses);
+        const customer = await CustomerModel.findById(id);
+        res.status(200).json({
+            incomeAndExpenses,
+            currentBalance: customer.wallet
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
