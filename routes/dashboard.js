@@ -48,15 +48,19 @@ router.get('/:id', async (req, res) => {
         let IncomegrowthRate = 0;
         if (IncomeInPreviousYear !== 0) {
             IncomegrowthRate = ((IncomeInYear - IncomeInPreviousYear) / IncomeInPreviousYear) * 100;
+            // fix 2 decimal
+            IncomegrowthRate =  IncomegrowthRate.toFixed(2);
         }
         let ExpensesgrowthRate = 0;
         if (ExpensesInPreviousYear !== 0) {
             ExpensesgrowthRate = ((ExpensesInYear - ExpensesInPreviousYear) / ExpensesInPreviousYear) * 100;
+            // fix 2 decimal
+            ExpensesgrowthRate =  ExpensesgrowthRate.toFixed(2);
         }
 
-        let month = [];
+        let monthInCurrentYear = [];
         for (let i = 0; i < 12; i++) {
-            month.push({ mouth: i, income: 0, expenses: 0 });
+            monthInCurrentYear.push({ mouth: i, income: 0, expenses: 0 });
         }
         AllIncomeAndExpenses.forEach((item) => {
             const itemYear = new Date(item.createdAt).getFullYear();
@@ -64,21 +68,48 @@ router.get('/:id', async (req, res) => {
 
             if (itemYear === currentYear) {
                 if (item.type === 'Income') {
-                    month[itemMonth].income += item.price;
+                    monthInCurrentYear[itemMonth].income += item.price;
                 } else if (item.type === 'Expenses') {
-                    month[itemMonth].expenses += item.price;
+                    monthInCurrentYear[itemMonth].expenses += item.price;
                 }
             }
         });
 
+        let monthInPreviousYear = [];
+        for (let i = 0; i < 12; i++) {
+            monthInPreviousYear.push({ mouth: i, income: 0, expenses: 0 });
+        }
+        AllIncomeAndExpenses.forEach((item) => {
+            const itemYear = new Date(item.createdAt).getFullYear();
+            const itemMonth = new Date(item.createdAt).getMonth(); // 0-11
+
+            if (itemYear === previousYear) {
+                if (item.type === 'Income') {
+                    monthInPreviousYear[itemMonth].income += item.price;
+                } else if (item.type === 'Expenses') {
+                    monthInPreviousYear[itemMonth].expenses += item.price;
+                }
+            }
+        });
+
+
         res.status(200).json({
-            month,
-            IncomeInYear,
-            ExpensesInYear,
-            IncomeInPreviousYear,
-            ExpensesInPreviousYear,
-            IncomegrowthRate,
-            ExpensesgrowthRate
+            currtentYear: {
+                Income: IncomeInYear,
+                Expenses: ExpensesInYear,
+                month: monthInCurrentYear
+            },
+            previousYear: {
+                Income: IncomeInPreviousYear,
+                Expenses: ExpensesInPreviousYear,
+                month: monthInPreviousYear
+            },
+            growthPercentRate: {
+                Income: IncomegrowthRate,
+                Expenses: ExpensesgrowthRate
+            },
+
+
         });
 
 
